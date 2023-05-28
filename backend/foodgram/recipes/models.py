@@ -139,16 +139,16 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         related_name='ingredient_recipeingredient'
     )
-    amount = models.PositiveIntegerField(
+    amount = models.IntegerField(
         'Количество',
         blank=False,
         null=False,
     )
 
-    # def add_ingredient(self, recipe_id, name, amount): # УБРАТЬ?!
-    #     ingredient = get_object_or_404(Ingredient, name=name)
-    #     return self.objects.get_or_create(recipe_id=recipe_id,
-    #                                       ingredient=ingredient, amount=amount)
+    def add_ingredient(self, recipe_id, name, amount): # УБРАТЬ?!
+        ingredient = get_object_or_404(Ingredient, name=name)
+        return self.objects.get_or_create(recipe_id=recipe_id,
+                                          ingredient=ingredient, amount=amount)
 
 class Favorite(models.Model):
     user = models.ForeignKey(
@@ -165,7 +165,8 @@ class Favorite(models.Model):
     class Meta:
         constraints = ( # Не работает
             models.UniqueConstraint(
-                fields=('user', 'recipe'), name='unique_recipe'
+                fields=('user', 'recipe'), name='unique_recipe',
+                violation_error_message='Рецепт уже добавлен в избранное!'
             ),
         )
 

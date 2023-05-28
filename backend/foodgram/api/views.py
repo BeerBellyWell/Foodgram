@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from api.serializers import (
     TagSerializer, IngredientSerializer, RecipeSerializer,
     RecipeReadOnlySerializer, FollowSerializer, FavoriteSerializer,
-    ShopingCartSerializer, RecipeIngredient,IngredientAmountSerializer
+    ShopingCartSerializer, RecipeIngredient,IngredientAmountSerializer,
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -78,18 +78,22 @@ class RecipeViewSet(ModelViewSet):
     
     @action(methods=['get'], detail=False)
     def download_shopping_cart(self, request):
+        recipes = ShopingCart.objects.filter(user=request.user.pk)
+        print(recipes)
+        for recipe in recipes:
+            print(recipe)
+            pk = recipe.recipe['ingredients']
+            print(pk)
         pass
-
-    
 
 
 class FollowViewSet(ModelViewSet):
     serializer_class = FollowSerializer
     permission_classes = [AllowAny]
-    # queryset = Follow.objects.all()
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user.username)
+        print(user)
         return user.follower.all()
     
     def perform_create(self, serializer):
@@ -98,18 +102,23 @@ class FollowViewSet(ModelViewSet):
 
 class FollowUnfollowViewSet(CreateDestroyViewSet):
     serializer_class = FollowSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        print(self.kwargs.get('id'))
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user.username)
-        return user.follower.get(id=self.kwargs.get('following_id'))
+        return user.follower.all()
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        following = self.kwargs.get('id')
+        print(following)
+        serializer.save(user=self.request.user, following=following)
 
 
 class FavoriteViewSet(CreateDestroyViewSet):
     serializer_class = FavoriteSerializer
-    # queryset = Favorite.objects.all()
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user.username)

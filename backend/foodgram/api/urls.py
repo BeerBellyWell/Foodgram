@@ -2,7 +2,7 @@ from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 from api.views import (
     TagViewSet, IngredientViewSet, RecipeViewSet, FollowViewSet,
-    FavoriteViewSet, FollowUnfollowViewSet, ShoppingCartViewSet,
+    FollowUnfollowViewSet, ShoppingCartViewSet, FavoriteViewSet,
 )
 
 
@@ -16,7 +16,7 @@ router.register(
 )
 
 router.register(
-    r'users/(?P<users_id>\d+)/subscribe', # users_id?
+    'users/(?P<users_id>\d+)/subscribe', # users_id?
     FollowUnfollowViewSet, basename='subscribe'
 )
 router.register(
@@ -30,7 +30,8 @@ router.register(
 
 
 urlpatterns = [
-    path(r'', include(router.urls), name='api'),
+    # path('users/<int:id>/subscribe/', FollowUnfollowViewSet.as_view({'post': 'create', 'delete': 'destroy'})),
+    path('', include(router.urls), name='api'),
     path(r'', include('djoser.urls')),
     re_path(r'^auth/', include ('djoser.urls.authtoken')),
 ]
