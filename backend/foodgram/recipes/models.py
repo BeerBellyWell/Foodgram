@@ -15,6 +15,7 @@ CHOICES = (
 
 
 class Ingredient(models.Model):
+    '''Класс ингредиентов'''
     name = models.CharField(
         'Название ингредиента',
         max_length=64,
@@ -28,15 +29,20 @@ class Ingredient(models.Model):
         null=False,
     )
 
-    def get_amount(self):
+    def get_amount(self): # Убрать?
         amount = RecipeIngredient.objects.filter(ingredient=self.id)
         return amount
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
     def __str__(self) -> str:
         return self.name
 
 
 class Tag(models.Model):
+    '''Класс тэгов'''
     name = models.CharField(
         'Название тега',
         max_length=50,
@@ -60,11 +66,16 @@ class Tag(models.Model):
         unique=True,
     )
 
+    class Meta:
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'
+
     def __str__(self) -> str:
         return self.name
 
 
 class Recipe(models.Model):
+    '''Класс рецептов'''
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -113,12 +124,22 @@ class Recipe(models.Model):
         blank=False,
         null=False,
     )
+    created = models.DateTimeField(
+        'Дата создания рецепта',
+        auto_now_add=True
+    )
+
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+        # ordering = ['created'][:-1]
 
     def __str__(self) -> str:
         return self.name
 
 
 class RecipeTag(models.Model):
+    '''Класс связыввающий рецепт-тэг'''
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE
@@ -128,8 +149,12 @@ class RecipeTag(models.Model):
         on_delete=models.CASCADE,
     )
 
+    def __str__(self) -> str:
+        return f'У {self.recipe} тэги: {self.tag}'
+
 
 class RecipeIngredient(models.Model):
+    '''Класс связывающий рецепт-игредиент'''
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -149,8 +174,13 @@ class RecipeIngredient(models.Model):
         ingredient = get_object_or_404(Ingredient, name=name)
         return self.objects.get_or_create(recipe_id=recipe_id,
                                           ingredient=ingredient, amount=amount)
+    
+    def __str__(self) -> str:
+        return f'У {self.recipe} ингредиенты: {self.ingredient}'
+
 
 class Favorite(models.Model):
+    '''Класс избранный рецептов'''
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -163,9 +193,10 @@ class Favorite(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Избранные рецепты'
         constraints = ( # Не работает
             models.UniqueConstraint(
-                fields=('user', 'recipe'), name='unique_recipe',
+                fields=('user', 'recipe'), name='unique_favorite',
                 violation_error_message='Рецепт уже добавлен в избранное!'
             ),
         )
@@ -175,6 +206,7 @@ class Favorite(models.Model):
     
 
 class ShopingCart(models.Model):
+    '''Список покупок'''
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -186,6 +218,8 @@ class ShopingCart(models.Model):
         related_name='recipe_shoping_cart',
     )
 
+    class Meta:
+        verbose_name = 'Список покупок'
+
     def __str__(self) -> str:
         return f'{self.user} добавил в список покупок {self.recipe}.'
-

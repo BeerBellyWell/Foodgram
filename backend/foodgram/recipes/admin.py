@@ -22,7 +22,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [RecipeTagInline, RecipeIngredientsInline, ]
-    list_display = ('name', 'text', 'cooking_time')
+    list_display = ('id', 'name', 'text', 'cooking_time')
 
 
 class IngredientAdmin(admin.ModelAdmin):

@@ -74,6 +74,7 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
+    '''Подписки'''
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -84,12 +85,6 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name='following',
     )
-    class Meta:
-        constraints = (
-            models.UniqueConstraint(
-                fields=('user', 'following'), name='unique_follow'
-            ),
-        )
 
     def __str__(self) -> str:
         return f'{self.user} подписан на {self.following}'

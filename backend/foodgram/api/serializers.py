@@ -47,24 +47,42 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        queryset=User.objects.all(),
-        slug_field='username',
-        default=serializers.CurrentUserDefault()
-    )
-    following = serializers.SlugRelatedField(
-        queryset=User.objects.all(),
-        slug_field='id',
-    )
+    # user = serializers.SlugRelatedField(
+    #     queryset=User.objects.all(),
+    #     slug_field='username',
+    #     default=serializers.CurrentUserDefault()
+    # )
+    # following = serializers.PrimaryKeyRelatedField( # Вернуть Slug Related
+    #     queryset=User.objects.all(),
+    #     # slug_field='id',
+    # )
 
     class Meta:
         model = Follow
-        fields = ('user', 'following')
+        fields = '__all__'
         extra_kwargs = {
             'user': {'required': False},
             'following': {'required': False},
         }
-        read_only_fields = ('user', )
+    
+    def validate(self, data):
+        following_id = self.context.get('view').kwargs.get('id')
+        following = get_object_or_404(User, pk=following_id)
+        # print(following)
+        user = self.context.get('request').user
+        is_follow = user.follower.filter(following=following_id)
+        method = self.context.get('request').method
+
+        if user == following and method == 'POST':
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя.'
+            )
+        elif is_follow and method == 'POST':
+            raise serializers.ValidationError(
+                'Вы уже подписаны на этого автора.'
+            )
+        data = {'following': following, 'user': user}
+        return data
 
     def to_representation(self, obj):
         data = UserSerializer(obj.following, context={'request': obj}).data
@@ -74,13 +92,6 @@ class FollowSerializer(serializers.ModelSerializer):
         data['recipes'] = data_2
         data['recipes_count'] = count
         return data
-
-    def validate(self, data):
-        if data['user'] == data['following']:
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя.'
-            )
-        return data 
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -96,18 +107,20 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ('user', 'recipe')
-        read_only_fields = ('user', )
+
+        read_only_fields = ('user',)
+
+        validators = [ # Этот валидатор не дает сделать DELETE
+            UniqueTogetherValidator(
+            queryset=Favorite.objects.all(),
+            fields = ('user', 'recipe'),
+            message='Рецепт уже добавлен в избранное.'
+            )
+        ]
 
     def to_representation(self, obj):
         return ResponseShoppingCartSerializer(obj.recipe).data
 
-    # validators = [ # Этот валидатор не дает сделать DELETE
-    #     UniqueTogetherValidator(
-    #         queryset=Favorite.objects.all(),
-    #         fields = ('user', 'recipe'),
-    #         message='Поля должны быть уникальными'
-    #     )
-    # ]
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -126,7 +139,7 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
-# delete?
+
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -140,7 +153,7 @@ class RecipeTagSerializer(serializers.ModelSerializer):
         model = RecipeTag
         fields = ['recipe', 'tag']
 
-# ХЗ НУЖОН ЛИ
+
 class IngredientAmountSerializer(serializers.Serializer):
 
     amount = serializers.IntegerField(min_value=0, max_value=123456789)
