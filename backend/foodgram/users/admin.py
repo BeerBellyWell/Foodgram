@@ -3,8 +3,10 @@ from users.models import (
     User, Follow
 )
 
+
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'role')
+    list_filter = ('email', 'first_name')
 
 
 class FollowAdmin(admin.ModelAdmin):

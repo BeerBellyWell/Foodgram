@@ -6,6 +6,7 @@ cryptography==40.0.2
 defusedxml==0.7.1
 Django==4.2.1
 django-autoslug==1.9.9
+django-cors-headers==4.0.0
 django-filter==23.2
 django-multiselectfield==0.1.12
 django-templated-mail==1.1.1

@@ -51,7 +51,7 @@ class User(AbstractUser):
         default=USER,
         error_messages={'role': 'Неверная роль'}
     )
-    
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name', 'password', 'username')
 

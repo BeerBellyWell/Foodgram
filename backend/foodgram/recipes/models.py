@@ -1,17 +1,6 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-from autoslug import AutoSlugField
-from django.shortcuts import get_object_or_404
-from multiselectfield import MultiSelectField
 
 from users.models import User
-
-
-CHOICES = (
-    ('Завтрак', 'Breakfast'),
-    ('Обед', 'Lunch'),
-    ('Ужин', 'Dinner'),
-)
 
 
 class Ingredient(models.Model):
@@ -28,10 +17,6 @@ class Ingredient(models.Model):
         blank=False,
         null=False,
     )
-
-    def get_amount(self): # Убрать?
-        amount = RecipeIngredient.objects.filter(ingredient=self.id)
-        return amount
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -87,17 +72,13 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         through='RecipeTag',
-        # choices=CHOICES,
         blank=False,
-        # null=False,
         verbose_name="Теги",
         related_name='tags',
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
-        # blank=False,
-        # null=False,
         verbose_name="Ингредиенты",
         related_name='ingredients',
     )
@@ -110,8 +91,8 @@ class Recipe(models.Model):
     image = models.ImageField(
         'Картинка рецепта',
         upload_to='recipes/images/',
-        blank=True, # исправить на False
-        null=True,  # исправить на False
+        blank=False,
+        null=False,
     )
     text = models.TextField(
         'Описание рецепта',
@@ -132,7 +113,6 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        # ordering = ['created'][:-1]
 
     def __str__(self) -> str:
         return self.name
@@ -170,11 +150,6 @@ class RecipeIngredient(models.Model):
         null=False,
     )
 
-    def add_ingredient(self, recipe_id, name, amount): # УБРАТЬ?!
-        ingredient = get_object_or_404(Ingredient, name=name)
-        return self.objects.get_or_create(recipe_id=recipe_id,
-                                          ingredient=ingredient, amount=amount)
-    
     def __str__(self) -> str:
         return f'У {self.recipe} ингредиенты: {self.ingredient}'
 
@@ -193,33 +168,28 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Избранные рецепты'
-        constraints = ( # Не работает
-            models.UniqueConstraint(
-                fields=('user', 'recipe'), name='unique_favorite',
-                violation_error_message='Рецепт уже добавлен в избранное!'
-            ),
-        )
+        unique_together = [['user', 'recipe']]
 
     def __str__(self) -> str:
         return f'{self.user} добавил в избранное {self.recipe}'
-    
 
-class ShopingCart(models.Model):
+
+class ShoppingCart(models.Model):
     '''Список покупок'''
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='user_shoping_cart',
+        related_name='user_shopping_cart',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipe_shoping_cart',
+        related_name='recipe_shopping_cart',
     )
 
     class Meta:
         verbose_name = 'Список покупок'
+        unique_together = [['user', 'recipe']]
 
     def __str__(self) -> str:
         return f'{self.user} добавил в список покупок {self.recipe}.'

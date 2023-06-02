@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filter
 
-from recipes.models import Recipe
+from recipes.models import Recipe, Tag
 
 
 class NameFilterInFilter(filter.BaseInFilter, filter.CharFilter):
@@ -8,15 +8,32 @@ class NameFilterInFilter(filter.BaseInFilter, filter.CharFilter):
 
 
 class RecipeFilter(filter.FilterSet):
-    # genre = SlugFilterInFilter(field_name='genre__slug', lookup_expr='in')
-    # category = SlugFilterInFilter(field_name='category__slug',
-    #                               lookup_expr='in')
-    # name = SlugFilterInFilter(field_name='name', lookup_expr='in')
-    # year = filter.BaseInFilter(field_name='year', lookup_expr='in')
-    tags = NameFilterInFilter(field_name='tags__name', lookup_expr='in')
-    author = NameFilterInFilter(field_name='author__first_name', lookup_expr='in')
-    is_favorited = filter.BaseInFilter(field_name='is_favorited', lookup_expr='in')
+    tags = filter.ModelMultipleChoiceFilter(
+        queryset=Tag.objects.all(),
+        field_name='tags__slug',
+        to_field_name='name',
+    )
+    author = NameFilterInFilter(field_name='author__id', lookup_expr='in')
+    is_favorited = filter.NumberFilter(
+        field_name='resipes__user',
+        method='is_favorited_filter'
+    )
+    is_shopping_cart = filter.NumberFilter(
+        field_name='recipe_shopping_cart__user',
+        method='is_shopping_cart_filter'
+    )
 
     class Meta:
         Model = Recipe
-        fields = ['tags', 'author', 'is_favorited']
+        fields = ['tags', 'author',]
+
+    def is_favorited_filter(self, queryset, name, value):
+        print(queryset)
+        if value == 1:
+            return queryset.filter(**{name: self.request.user})
+        return queryset
+
+    def is_shopping_cart_filter(self, queryset, name, value):
+        if value == 1:
+            return queryset.filter(**{name: self.request.user})
+        return queryset
