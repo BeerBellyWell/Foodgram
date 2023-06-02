@@ -1,27 +1,21 @@
-from django.shortcuts import get_object_or_404
-from rest_framework.viewsets import ModelViewSet
-from api.serializers import (
-    TagSerializer, IngredientSerializer, RecipeSerializer,
-    RecipeReadOnlySerializer, FollowSerializer, FavoriteSerializer,
-    ShoppingCartSerializer, RecipeIngredient,
-)
-from rest_framework.permissions import IsAuthenticated
+from api.serializers import (FavoriteSerializer, FollowSerializer,
+                             IngredientSerializer, RecipeIngredient,
+                             RecipeReadOnlySerializer, RecipeSerializer,
+                             ShoppingCartSerializer, TagSerializer)
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-from .permissions import ReadOrAdminOnly, AuthorOrReadOnly
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from rest_framework import filters, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from users.models import Follow, User
 
-from users.models import (
-    Follow, User
-)
-from recipes.models import (
-    Tag, Ingredient, Recipe, Favorite, ShoppingCart,
-)
 from .filters import RecipeFilter
 from .mixins import CreateDestroyViewSet
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status
+from .permissions import AuthorOrReadOnly, ReadOrAdminOnly
 
 
 class TagViewSet(ModelViewSet):

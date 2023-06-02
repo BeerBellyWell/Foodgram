@@ -1,5 +1,4 @@
 from django_filters import rest_framework as filter
-
 from recipes.models import Recipe, Tag
 
 
@@ -25,7 +24,7 @@ class RecipeFilter(filter.FilterSet):
 
     class Meta:
         Model = Recipe
-        fields = ['tags', 'author',]
+        fields = ['tags', 'author', ]
 
     def is_favorited_filter(self, queryset, name, value):
         print(queryset)
