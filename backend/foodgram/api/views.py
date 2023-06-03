@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from users.models import Follow, User
 
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientSearchFilter
 from .mixins import CreateDestroyViewSet
 from .permissions import AuthorOrReadOnly, ReadOrAdminOnly
 
@@ -31,9 +31,9 @@ class IngredientViewSet(ModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = [ReadOrAdminOnly, ]
     pagination_class = None
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filter_backends = (IngredientSearchFilter, )
     filterset_fields = None
-    search_fields = ('name',)
+    search_fields = ('name', )
     http_method_names = ('get', )
 
 

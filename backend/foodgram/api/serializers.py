@@ -54,8 +54,12 @@ class FollowSerializer(serializers.ModelSerializer):
         }
 
     def _get_recipes_limit(self):
-        recipes = self.context.get('request').query_params.get('recipes_limit')
-        recipes_limit = int(recipes)
+        try:
+            recipes_limit = int(
+                self.context.get('request').query_params.get('recipes_limit')
+            )
+        except(ValueError, TypeError):
+            recipes_limit = None
         return recipes_limit
 
     def validate(self, data):
@@ -85,6 +89,7 @@ class FollowSerializer(serializers.ModelSerializer):
             recipes[:recipes_limit], many=True).data
         data['recipes'] = data_2
         data['recipes_count'] = count
+
         return data
 
 
