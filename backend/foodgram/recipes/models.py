@@ -1,6 +1,8 @@
 from django.db import models
-from users.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
+from users.models import User
+from foodgram.settings import AMOUNT_MIN
 
 class Ingredient(models.Model):
     '''Класс ингредиентов'''
@@ -99,10 +101,11 @@ class Recipe(models.Model):
         blank=False,
         null=False,
     )
-    cooking_time = models.PositiveIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления в минутах',
         blank=False,
         null=False,
+        validators=[MinValueValidator(1)]
     )
     created = models.DateTimeField(
         'Дата создания рецепта',
@@ -143,10 +146,11 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         related_name='ingredient_recipeingredient'
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         'Количество',
         blank=False,
         null=False,
+        validators=[MinValueValidator(AMOUNT_MIN), ]
     )
 
     def __str__(self) -> str:
@@ -167,7 +171,11 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        unique_together = [['user', 'recipe']]
+        constraints = (
+            models.UniqueConstraint(
+                fields=('user', 'recipe'), name='unique_favorite'
+            ),
+        )
 
     def __str__(self) -> str:
         return f'{self.user} добавил в избранное {self.recipe}'
@@ -178,17 +186,21 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='user_shopping_cart',
+        related_name='shopping_cart',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipe_shopping_cart',
+        related_name='shopping_cart',
     )
 
     class Meta:
         verbose_name = 'Список покупок'
-        unique_together = [['user', 'recipe']]
+        constraints = (
+            models.UniqueConstraint(
+                fields=('user', 'recipe'), name='unique_shopping_cart'
+            ),
+        )
 
     def __str__(self) -> str:
         return f'{self.user} добавил в список покупок {self.recipe}.'
