@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from users.models import User
-from foodgram.settings import AMOUNT_MIN
+from foodgram.settings import AMOUNT_MIN, MIN_VALUE
 
 class Ingredient(models.Model):
     '''Класс ингредиентов'''
@@ -105,7 +105,7 @@ class Recipe(models.Model):
         'Время приготовления в минутах',
         blank=False,
         null=False,
-        validators=[MinValueValidator(1)]
+        validators=(MinValueValidator(MIN_VALUE), )
     )
     created = models.DateTimeField(
         'Дата создания рецепта',
@@ -150,7 +150,7 @@ class RecipeIngredient(models.Model):
         'Количество',
         blank=False,
         null=False,
-        validators=[MinValueValidator(AMOUNT_MIN), ]
+        validators=(MinValueValidator(AMOUNT_MIN), )
     )
 
     def __str__(self) -> str:

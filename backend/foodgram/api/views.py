@@ -17,6 +17,7 @@ from api.serializers import (FavoriteSerializer, FollowSerializer,
                              RecipeReadOnlySerializer, RecipeSerializer,
                              ShoppingCartSerializer, TagSerializer)
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from foodgram.settings import CONTENT_TYPE
 
 
 class TagViewSet(ModelViewSet):
@@ -48,14 +49,14 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
-        if self.action in ['retrieve', 'list']:
+        if self.action in ('retrieve', 'list'):
             return RecipeReadOnlySerializer
         return RecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(methods=['post', 'delete', ], detail=True,
+    @action(methods=('post', 'delete', ), detail=True,
             permission_classes=(IsAuthenticated, ))
     def favorite(self, request, pk=None):
         data = {
@@ -75,7 +76,7 @@ class RecipeViewSet(ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['post', 'delete'], detail=True,
+    @action(methods=('post', 'delete'), detail=True,
             permission_classes=(IsAuthenticated, ))
     def shopping_cart(self, request, pk=None):
         data = {
@@ -93,7 +94,7 @@ class RecipeViewSet(ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['get'], detail=False,
+    @action(methods=('get'), detail=False,
             permission_classes=(IsAuthenticated, ))
     def download_shopping_cart(self, request):
         recipes = ShoppingCart.objects.filter(
@@ -113,14 +114,13 @@ class RecipeViewSet(ModelViewSet):
         for key, value in ingredients.items():
             shopping_cart.append(f'{key} - {value} \n')
 
-        content_type = 'Content-Type: text/plain'
-        response = HttpResponse(shopping_cart, content_type)
+        response = HttpResponse(shopping_cart, CONTENT_TYPE)
         return response
 
 
 class FollowViewSet(ModelViewSet):
     serializer_class = FollowSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user.username)

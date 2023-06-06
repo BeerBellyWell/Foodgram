@@ -7,6 +7,8 @@ from django.core.management.utils import get_random_secret_key
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AMOUNT_MIN = 1
+MIN_VALUE = 1
+CONTENT_TYPE = 'Content-Type: text/plain'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/

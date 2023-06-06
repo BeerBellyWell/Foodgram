@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             RecipeTag, ShoppingCart, Tag)
 from users.models import Follow, User
+from foodgram.settings import AMOUNT_MIN, MIN_VALUE
 
 
 class Base64ImageField(serializers.ImageField):
@@ -152,6 +153,15 @@ class IngredientAmountSerializer(serializers.Serializer):
     amount = serializers.IntegerField()
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
+    def validate_amount(self, value):
+        print(value)
+        min_value = AMOUNT_MIN
+        if value < min_value:
+            raise serializers.ValidationError(
+                f'Количество не может быть меньше {min_value}.'
+            )
+        return value
+
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -173,10 +183,10 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'text', 'cooking_time')
 
     def validate_cooking_time(self, value):
-        min_value = 1
+        min_value = MIN_VALUE
         if value < min_value:
             raise serializers.ValidationError(
-                'Время приготовления не может быть 0.'
+                f'Время приготовления не может быть меньше {min_value}.'
             )
         return value
 
@@ -189,7 +199,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             validate_lst.append(i)
         new_list = list(set(validate_lst))
         if len(new_list) != len(validate_lst):
-            raise serializers.ValidationError ('Ингредиенты дублируются.')
+            raise serializers.ValidationError('Ингредиенты дублируются.')
         
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(
