@@ -42,7 +42,7 @@ jobs:
     - name: Push to Docker Hub
       uses: docker/build-push-action@v2 
       with:
-        # context: ./api_yamdb
+        context: ./backend/foodgram/
         push: true
         tags: beerbellywell/foodgram:latest
 
