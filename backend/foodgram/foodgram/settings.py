@@ -11,7 +11,7 @@ MIN_VALUE = 1
 MIN_COOKING_TIME = 1
 CONTENT_TYPE = 'Content-Type: text/plain'
 
-CSRF_TRUSTED_ORIGINS = ('http://localhost', '51.250.67.101')
+CSRF_TRUSTED_ORIGINS = ('http://localhost', 'http://51.250.67.101')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
