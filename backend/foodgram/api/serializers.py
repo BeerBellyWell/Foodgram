@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             RecipeTag, ShoppingCart, Tag)
 from users.models import Follow, User
-from foodgram.settings import AMOUNT_MIN, MIN_VALUE
+from foodgram.settings import AMOUNT_MIN, MIN_VALUE, MIN_COOKING_TIME
 
 
 class Base64ImageField(serializers.ImageField):
@@ -154,11 +154,9 @@ class IngredientAmountSerializer(serializers.Serializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
     def validate_amount(self, value):
-        print(value)
-        min_value = AMOUNT_MIN
-        if value < min_value:
+        if value < AMOUNT_MIN:
             raise serializers.ValidationError(
-                f'Количество не может быть меньше {min_value}.'
+                f'Количество не может быть меньше {AMOUNT_MIN}.'
             )
         return value
 
@@ -183,10 +181,9 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'text', 'cooking_time')
 
     def validate_cooking_time(self, value):
-        min_value = MIN_VALUE
-        if value < min_value:
+        if value < MIN_COOKING_TIME:
             raise serializers.ValidationError(
-                f'Время приготовления не может быть меньше {min_value}.'
+                f'Время приготовления не может быть меньше {MIN_COOKING_TIME}.'
             )
         return value
 

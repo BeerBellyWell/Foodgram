@@ -94,7 +94,7 @@ class RecipeViewSet(ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=('get'), detail=False,
+    @action(methods=('get', ), detail=False,
             permission_classes=(IsAuthenticated, ))
     def download_shopping_cart(self, request):
         recipes = ShoppingCart.objects.filter(

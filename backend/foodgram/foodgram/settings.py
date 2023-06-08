@@ -8,7 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 AMOUNT_MIN = 1
 MIN_VALUE = 1
+MIN_COOKING_TIME = 1
 CONTENT_TYPE = 'Content-Type: text/plain'
+
+CSRF_TRUSTED_ORIGINS = ('http://localhost', )
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -89,7 +92,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='Chao14785691998'),
-        'HOST': os.getenv('DB_HOST', default='127.0.0.1'),
+        'HOST': os.getenv('DB_HOST', default='db'),
         'PORT': os.getenv('DB_PORT', default='5432')
     }
 }
@@ -136,6 +139,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
