@@ -102,7 +102,7 @@ class RecipeViewSet(ModelViewSet):
         ingredient_recipe = RecipeIngredient.objects.filter(
             recipe_id__in=recipes).order_by('ingredient').values(
             'ingredient__name', 'ingredient__measurement_unit'
-            ).annotate(Sum('amount'))
+        ).annotate(Sum('amount'))
 
         ingredients = {}
         for ingredient in ingredient_recipe:

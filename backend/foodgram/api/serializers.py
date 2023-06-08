@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             RecipeTag, ShoppingCart, Tag)
 from users.models import Follow, User
-from foodgram.settings import AMOUNT_MIN, MIN_VALUE, MIN_COOKING_TIME
+from foodgram.settings import AMOUNT_MIN, MIN_COOKING_TIME
 
 
 class Base64ImageField(serializers.ImageField):
@@ -74,12 +74,12 @@ class FollowSerializer(serializers.ModelSerializer):
         if method == 'POST':
             if user == following:
                 raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя.'
-            )
+                    'Нельзя подписаться на самого себя.'
+                )
             if is_follow:
                 raise serializers.ValidationError(
-                'Вы уже подписаны на этого автора.'
-            )
+                    'Вы уже подписаны на этого автора.'
+                )
         data = {'following': following, 'user': user}
         return data
 
@@ -197,7 +197,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         new_list = list(set(validate_lst))
         if len(new_list) != len(validate_lst):
             raise serializers.ValidationError('Ингредиенты дублируются.')
-        
+
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(
             author=self.context.get('request').user,
@@ -236,9 +236,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             tags_old = instance.tags.all()
             for tag in tags_old:
                 RecipeTag.objects.filter(
-                        recipe=instance.pk,
-                        tag=tag.pk
-                    ).delete()
+                    recipe=instance.pk,
+                    tag=tag.pk
+                ).delete()
             lst_tags_new = []
             for tag in lst_tags:
                 current_tag = get_object_or_404(Tag, pk=tag.pk)
@@ -258,7 +258,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                 validate_lst.append(i)
             new_list = list(set(validate_lst))
             if len(new_list) != len(validate_lst):
-                raise serializers.ValidationError ('Ингредиенты дублируются.')
+                raise serializers.ValidationError('Ингредиенты дублируются.')
 
             ingredients_old = instance.ingredients.all()
             for ingredient in ingredients_old:
@@ -288,10 +288,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = data.get('ingredients')
         for ingredient in ingredients:
             ingredient['amount'] = (
-                    RecipeIngredient.objects.get(
-                        recipe=data['id'], ingredient=ingredient['id']
-                        ).amount
-                 )
+                RecipeIngredient.objects.get(
+                    recipe=data['id'], ingredient=ingredient['id']
+                ).amount
+            )
         return data
 
 
