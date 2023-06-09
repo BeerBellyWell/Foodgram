@@ -14,11 +14,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         connect = psycopg2.connect(
-            f"host={os.getenv('DB_HOST', default='db')}"
-            f"port={os.getenv('DB_PORT', default='5432')}"
-            f"dbname={os.getenv('DB_NAME', default='postgres')}"
-            f"user={os.getenv('POSTGRES_USER', default='postgres')}"
-            f"password={os.getenv('POSTGRES_PASSWORD', default='Chao14785691998')}"
+            f"host={os.getenv('DB_HOST', default='db')}\n"
+            f"port={os.getenv('DB_PORT', default='5432')}\n"
+            f"dbname={os.getenv('DB_NAME', default='postgres')}\n"
+            f"user={os.getenv('POSTGRES_USER', default='postgres')}\n"
+            f"password={os.getenv('POSTGRES_PASSWORD', default='Chao14785691998')}\n"
         )
 
         cursor = connect.cursor()
@@ -26,10 +26,14 @@ class Command(BaseCommand):
         with open('api/management/commands/data/ingredients.csv',
                   'r', encoding='UTF-8') as file:
             contents = csv.reader(file)
-            col_names, number_questions = self.get_col_names(cursor,
-                                                             'app_ingredient')
-            insert_records = (f'INSERT INTO app_ingredient ({col_names})'
-                              f'VALUES({number_questions})')
+            col_names, number_questions = self.get_col_names(
+                cursor,
+                'recipes_ingredient'
+            )
+            insert_records = (
+                f'INSERT INTO recipes_ingredient ({col_names})'
+                f'VALUES({number_questions})'
+            )
             cursor.executemany(insert_records, contents)
 
         connect.commit()
@@ -37,8 +41,13 @@ class Command(BaseCommand):
 
     def get_col_names(self, cursor, tablename):
         cursor.execute(f"SELECT * FROM {tablename}")
-        col_names = ', '.join([x[0] for x in cursor.description
-                               if x[0] != 'id'])
-        number_questions = ', '.join(['%s' for x in
-                                      range(len(cursor.description) - 1)])
+        col_names = ', '.join(
+            [x[0] for x in cursor.description
+            if x[0] != 'id']
+        )
+        number_questions = ', '.join(
+            ['%s' for x in
+            range(len(cursor.description) - 1)]
+        )
+
         return col_names, number_questions
