@@ -63,4 +63,3 @@ jobs:
           sudo docker-compose stop
           sudo docker-compose rm beerbellywell/foodgram
           sudo docker-compose up -d --build
-
