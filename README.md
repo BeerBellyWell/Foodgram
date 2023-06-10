@@ -7,6 +7,8 @@
 
 #### Как запустить проект:
 
++ IP: http://51.250.67.101
+
 + клонируем репозиторий `git clone`
 `https://github.com/BeerBellyWell/foodgram-project-react`
 + переходим в него `cd foodgram-project-react/backend/foodgram`
