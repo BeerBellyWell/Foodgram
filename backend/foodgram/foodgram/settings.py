@@ -163,7 +163,7 @@ REST_FRAMEWORK = {
         'api.pagination.Pagination',
         # 'rest_framework.pagination.PageNumberPagination',
         # 'rest_framework.pagination.LimitOffsetPagination',
-        'PAGE_SIZE': 6,
+        # 'PAGE_SIZE': 6,
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',

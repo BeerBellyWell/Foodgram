@@ -12,7 +12,7 @@ class RecipeFilter(filter.FilterSet):
     tags = filter.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
         field_name='tags__slug',
-        to_field_name='name',
+        to_field_name='slug',
     )
     author = NameFilterInFilter(field_name='author__id', lookup_expr='in')
     is_favorited = filter.NumberFilter(
