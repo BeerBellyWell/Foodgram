@@ -161,9 +161,6 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PAGINATION_CLASS':
         'api.pagination.Pagination',
-        # 'rest_framework.pagination.PageNumberPagination',
-        # 'rest_framework.pagination.LimitOffsetPagination',
-        # 'PAGE_SIZE': 6,
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
