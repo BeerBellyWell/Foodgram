@@ -122,7 +122,7 @@ class Recipe(models.Model):
 
 
 class RecipeTag(models.Model):
-    '''Класс связыввающий рецепт-тэг'''
+    '''Класс связывающий рецепт-тэг'''
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE
@@ -131,6 +131,10 @@ class RecipeTag(models.Model):
         Tag,
         on_delete=models.CASCADE,
     )
+
+    class Meta:
+        verbose_name = 'Рецепт-тэг'
+        verbose_name_plural = 'Рецепты-тэги'
 
     def __str__(self) -> str:
         return f'У {self.recipe} тэги: {self.tag}'
@@ -154,6 +158,10 @@ class RecipeIngredient(models.Model):
         validators=(MinValueValidator(AMOUNT_MIN), )
     )
 
+    class Meta:
+        verbose_name = 'Рецепт-ингредиент'
+        verbose_name_plural = 'Рецепты-ингредиенты'
+
     def __str__(self) -> str:
         return f'У {self.recipe} ингредиенты: {self.ingredient}'
 
@@ -172,6 +180,8 @@ class Favorite(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные'
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'), name='unique_favorite'
@@ -197,6 +207,7 @@ class ShoppingCart(models.Model):
 
     class Meta:
         verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'), name='unique_shopping_cart'
