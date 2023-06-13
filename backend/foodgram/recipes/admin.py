@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.shortcuts import get_object_or_404
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             RecipeTag, ShoppingCart, Tag)
-from users.models import User
 
 
 class RecipeTagInline(admin.TabularInline):
@@ -25,7 +23,7 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = [RecipeTagInline, RecipeIngredientsInline, ]
     list_display = ('id', 'name', 'text', 'cooking_time', 'count_favorite', )
     list_filter = ('tags', )
-    search_fields= ('name', 'author__username', 'author__email', )
+    search_fields = ('name', 'author__username', 'author__email', )
 
     def count_favorite(self, obj):
         return Favorite.objects.filter(recipe=obj.pk).count()
